@@ -18,7 +18,6 @@ func InitRouter() *gin.Engine {
 	r.Static("/themes", "./static/themes")
 	r.Static("/fonts", "./static/fonts")
 	r.Static("/image", "./static/image")
-	r.Static("/draw", "./static/drawio")
 
 	r.Use(gin.Logger())
 	r.SetFuncMap(template.FuncMap{
@@ -57,6 +56,8 @@ func InitRouter() *gin.Engine {
 			"code":    200,
 		})
 	})
+	apiV1.Static("/draw", "./static/drawio")
+
 	apiV1.GET("/content", controller.GetNote)
 	apiV1.POST("/content", controller.WriteNote)
 	apiV1.POST("/image", controller.SaveImage)
