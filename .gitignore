@@ -1,0 +1,10 @@
+config.json
+.idea/
+app/
+log/
+main
+run.sh
+super-markdown-editor-web.iml
+super_editor_web_0.0.1.tar.gz
+super_markdown_editor_web_0.0.1.tar.gz
+editor-web.tar.gz
