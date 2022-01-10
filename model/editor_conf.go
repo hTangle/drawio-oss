@@ -14,11 +14,24 @@ type HttpConf struct {
 	SignedKey string `json:"signed_key" yaml:"signed_key"`
 }
 
+type OssConf struct {
+	Ak       string `json:"ak"`
+	Sk       string `json:"sk"`
+	Bucket   string `json:"bucket"`
+	Region   string `json:"region"`
+	Endpoint string `json:"endpoint"`
+}
+
+func (o *OssConf) IsEmpty() bool {
+	return o.Ak == "" || o.Sk == "" || o.Bucket == "" || o.Region == "" || o.Endpoint == ""
+}
+
 type EditorConf struct {
 	Http      HttpConf          `json:"http" yaml:"http"`
 	WorkDir   string            `json:"work_dir" yaml:"work_dir"`
 	ImageDir  string            `json:"image_dir" yaml:"image_dir"`
 	UserInfos map[string]string `json:"user_infos" yaml:"user"`
+	Oss       OssConf           `json:"oss"`
 }
 
 func GetDefaultEditorConf() *EditorConf {
