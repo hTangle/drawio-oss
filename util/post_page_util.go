@@ -24,6 +24,42 @@ const (
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor/dist/index.css"/>
     <script src="https://cdn.jsdelivr.net/npm/vditor/dist/method.min.js"></script>
     <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
+    <style>
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0); /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
+        }
+
+        /* Modal Content (Image) */
+        .modal-content {
+            margin: auto;
+            display: block;
+        }
+
+        /* Add Animation - Zoom in the Modal */
+        .modal-content, #caption {
+            animation-name: zoom;
+            animation-duration: 0.6s;
+        }
+
+        @keyframes zoom {
+            from {
+                transform: scale(0)
+            }
+            to {
+                transform: scale(1)
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -62,10 +98,32 @@ const (
         <span class="text-muted" style="text-align: center;"><p class="text-muted">&copy; 2021–2022 皖ICP备2022000174号</p></span>
     </div>
 </footer>
+<div id="myModal" class="modal" onclick="disShowImage()">
+    <img class="modal-content" id="img01" onmousewheel="return zoomImg(this)"
+         style="width: auto;height: auto;max-width: 100%;max-height: 100%;">
+</div>
 <script type="text/javascript">
 `
 	PostPageFooter = `</script>
 <script type="text/javascript">
+	var modal = document.getElementById("myModal");
+	var modalImg = document.getElementById("img01");
+
+	// When the user clicks on <span> (x), close the modal
+	function disShowImage() {
+		modal.style.display = "none";
+	}
+
+	function zoomImg(obj) {
+		// 一开始默认是100%
+		let zoom = parseInt(obj.style.zoom, 10) || 100;
+		// 滚轮滚一下wheelDelta的值增加或减少120
+		zoom += event.wheelDelta / 12;
+		if (zoom > 0) {
+			obj.style.zoom = zoom + '%';
+		}
+		return false;
+	}
     const initOutline = () => {
         const headingElements = []
         Array.from(document.getElementById('preview').children).forEach((item) => {
@@ -119,8 +177,28 @@ const (
 						outlineElement.style.right='0px';
 						initOutline()
 					}
+					$("#preview img").on('click',function(){
+                        console.log("test---",$(this).attr("src"))
+                        modal.style.display = "block";
+                        modalImg.style.zoom = "reset";
+                        modalImg.src = $(this).attr("src");
+                        imageClicked = true;
+                    })
 				},
 			})
+		document.onkeydown = function (oEvent) {
+            var oEvent = oEvent || window.oEvent;
+            //获取键盘的keyCode值
+            var nKeyCode = oEvent.code;
+            //获取ctrl 键对应的事件属性
+            var bCtrlKeyCode = oEvent.ctrlKey || oEvent.metaKey;
+            if (nKeyCode === "KeyS" && bCtrlKeyCode) {
+                console.log("ctrl + s");
+            } else if (nKeyCode === "Escape" && imageClicked) {
+                imageClicked = false;
+                modal.style.display = "none";
+            }
+        }
     });
 </script>
 </body>
