@@ -1,4 +1,14 @@
-<!DOCTYPE html>
+package util
+
+import (
+	"fmt"
+	"io/ioutil"
+	"path"
+	"strings"
+)
+
+const (
+	PostPageHeader = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
@@ -6,21 +16,6 @@
     <title>SuperMarkdownEditor</title>
 
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script>
-        $.ajax({
-            type: "get",
-            url: "/api/v1/ping",
-            async: false,
-            success: function (data) {
-                if (data.code !== 200) {
-                    $(location).attr("href", "login")
-                }
-            },
-            error: function () {
-                $(location).attr("href", "login")
-            }
-        });
-    </script>
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
@@ -67,22 +62,10 @@
         <span class="text-muted" style="text-align: center;"><p class="text-muted">&copy; 2021–2022 皖ICP备2022000174号</p></span>
     </div>
 </footer>
-
 <script type="text/javascript">
-    function getQueryVariable(variable) {
-        let query = window.location.search.substring(1);
-        let vars = query.split("&");
-        for (let i = 0; i < vars.length; i++) {
-            let pair = vars[i].split("=");
-            if (pair[0] === variable) {
-                return pair[1];
-            }
-        }
-        return "";
-    }
-
-    let article_id = getQueryVariable("id");
-
+`
+	PostPageFooter = `</script>
+<script type="text/javascript">
     const initOutline = () => {
         const headingElements = []
         Array.from(document.getElementById('preview').children).forEach((item) => {
@@ -117,34 +100,39 @@
     }
 
     $(function () {
-        $.get("/api/v1/content?id=" + article_id, function (data, status) {
-            if (data && status === 'success') {
-                $("#articleTitle").text(data.data.title);
-                $(document).attr("title", data.data.title);
-                Vditor.preview(document.getElementById('preview'),
-                    data.data.data, {
-                        anchor: 1,
-                        after () {
-                            if (window.innerWidth <= 768) {
-                                return
-                            }
-                            const outlineElement = document.getElementById('outline')
-                            Vditor.outlineRender(document.getElementById('preview'), outlineElement)
-                            if (outlineElement.innerText.trim() !== '') {
-                                outlineElement.style.display = 'block';
-                                // outlineElement.style.float = 'right';
-                                outlineElement.style.position='fixed';
-                                outlineElement.style.top='10em';
-                                outlineElement.style.right='0px';
-                                initOutline()
-                            }
-                        },
-                    })
-            }
-        });
+		$("#articleTitle").text(title);
+		$(document).attr("title",title);
+		Vditor.preview(document.getElementById('preview'),
+			content, {
+				anchor: 1,
+				after () {
+					if (window.innerWidth <= 768) {
+						return
+					}
+					const outlineElement = document.getElementById('outline')
+					Vditor.outlineRender(document.getElementById('preview'), outlineElement)
+					if (outlineElement.innerText.trim() !== '') {
+						outlineElement.style.display = 'block';
+						// outlineElement.style.float = 'right';
+						outlineElement.style.position='fixed';
+						outlineElement.style.top='10em';
+						outlineElement.style.right='0px';
+						initOutline()
+					}
+				},
+			})
     });
 </script>
 </body>
 <body>
 </body>
-</html>
+</html>`
+	TitleHtmlTemplate   = "var title=`%s`;\n"
+	ContentHtmlTemplate = "var content=`%s`;"
+)
+
+func SavePostToHTML(id, title, html, targetPath string) {
+
+	AllHtml := PostPageHeader + fmt.Sprintf(TitleHtmlTemplate, title) + fmt.Sprintf(ContentHtmlTemplate, strings.ReplaceAll(html, "`", "\\`")) + PostPageFooter
+	ioutil.WriteFile(path.Join(targetPath, id+".html"), []byte(AllHtml), 0666)
+}

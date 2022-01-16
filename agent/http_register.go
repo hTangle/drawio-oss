@@ -18,6 +18,7 @@ func InitRouter() *gin.Engine {
 	r.Static("/themes", "./static/themes")
 	r.Static("/fonts", "./static/fonts")
 	r.Static("/image", "./static/image")
+	r.Static("/post", model.Blogs.HtmlPath)
 
 	r.Use(gin.Logger())
 	r.SetFuncMap(template.FuncMap{
@@ -31,6 +32,10 @@ func InitRouter() *gin.Engine {
 	})
 	r.GET("/show", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "show.html", nil)
+	})
+
+	r.GET("/gallery", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "gallery.html", nil)
 	})
 
 	r.GET("/list", func(context *gin.Context) {
@@ -48,6 +53,9 @@ func InitRouter() *gin.Engine {
 		context.HTML(http.StatusOK, "login.html", nil)
 	})
 
+	openApi := r.Group(model.OpenApiGroup)
+	openApi.GET("/publish", controller.GetBlogs)
+
 	apiV1 := r.Group(model.GroupPrefix)
 	apiV1.Use(JWTAuth())
 	apiV1.GET("/ping", func(context *gin.Context) {
@@ -64,6 +72,9 @@ func InitRouter() *gin.Engine {
 	apiV1.GET("/tree", controller.GetBookTree)
 	apiV1.POST("/rename", controller.RenameBookOrNote)
 	apiV1.POST("/create", controller.CreateNote)
+	apiV1.POST("/publish", controller.PublishNote)
+
+	apiV1.GET("/publish", controller.GetBlogs)
 
 	return r
 }

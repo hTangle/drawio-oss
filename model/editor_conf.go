@@ -84,8 +84,35 @@ func init() {
 	if _, err := os.Stat(LocalEditorConf.GetWorkDir()); err != nil {
 		os.MkdirAll(LocalEditorConf.GetWorkDir(), 0777)
 	}
+	hpp := path.Join(LocalEditorConf.GetWorkDir(), BlogHtmlPath)
+	if _, err := os.Stat(hpp); err != nil {
+		os.MkdirAll(hpp, 0766)
+	}
+	Blogs.SetHtmlPath(hpp)
+
+	pp := path.Join(LocalEditorConf.GetWorkDir(), PublisherPath)
+	if _, err := os.Stat(pp); err != nil {
+		err = ioutil.WriteFile(pp, []byte("{\"blogs\":[]}"), 0766)
+		if err != nil {
+			panic(err)
+		}
+	}
+	data, err := ioutil.ReadFile(pp)
+	if err != nil {
+		panic(err)
+	}
+	err = json.Unmarshal(data, &Blogs)
+	if err != nil {
+		panic(err)
+	}
+	Blogs.SetPath(pp)
+	Blogs.InitBlog()
 }
 
 func GetLocalEditorConf(confPath string) *EditorConf {
+	return LocalEditorConf
+}
+
+func GetLocalEditorConfig() *EditorConf {
 	return LocalEditorConf
 }

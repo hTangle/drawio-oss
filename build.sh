@@ -13,3 +13,4 @@ cp -r templates output/editor/
 docker build -t super_markdown_editor_web:${version} .
 docker save super_markdown_editor_web:${version}>super_markdown_editor_web_${version}.tar.gz
 rm -rf output
+sha256sum super_markdown_editor_web_${version}.tar.gz

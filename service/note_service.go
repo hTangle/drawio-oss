@@ -16,6 +16,7 @@ func AddNewNote(parentId, id, showName string) {
 
 func WriteNote(id, content string) {
 	model.GetLocalShowTrees().WriteNote(id, content)
+	PublishNote(model.GetLocalShowTrees().GetNoteTitle(id), id, content)
 }
 
 func CreateNote(id, name, parentId string) {
