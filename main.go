@@ -48,8 +48,5 @@ func init() {
 func main() {
 	logrus.SetReportCaller(true)
 	model.GetLocalEditorConf("./config.json")
-	model.GetLocalShowTrees()
-	treeNode := model.GetLocalShowTrees().GenerateShowTrees()
-	logrus.WithField("tree", treeNode).Warnf("get show tree")
 	agent.RunAgent(true, model.GetLocalEditorConf(""))
 }

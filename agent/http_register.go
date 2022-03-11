@@ -12,13 +12,8 @@ func InitRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Recovery())
 
-	r.Static("/css", "./static/css")
-	r.Static("/js", "./static/js")
-	r.Static("/svg", "./static/svg")
-	r.Static("/themes", "./static/themes")
-	r.Static("/fonts", "./static/fonts")
-	r.Static("/image", "./static/image")
-	r.Static("/post", model.Blogs.HtmlPath)
+	r.Static("/api/css", "./static/css")
+	r.Static("/api/js", "./static/js")
 
 	r.Use(gin.Logger())
 	r.SetFuncMap(template.FuncMap{
@@ -27,19 +22,8 @@ func InitRouter() *gin.Engine {
 		},
 	})
 	r.LoadHTMLGlob("templates/**")
-	r.GET("/main", func(context *gin.Context) {
-		context.HTML(http.StatusOK, "main.html", nil)
-	})
-	r.GET("/show", func(context *gin.Context) {
-		context.HTML(http.StatusOK, "show.html", nil)
-	})
-
-	r.GET("/gallery", func(context *gin.Context) {
-		context.HTML(http.StatusOK, "gallery.html", nil)
-	})
-
-	r.GET("/list", func(context *gin.Context) {
-		context.HTML(http.StatusOK, "list.html", nil)
+	r.GET("/draw", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "draw.html", nil)
 	})
 
 	r.GET("/login", func(context *gin.Context) {
@@ -53,9 +37,6 @@ func InitRouter() *gin.Engine {
 		context.HTML(http.StatusOK, "login.html", nil)
 	})
 
-	openApi := r.Group(model.OpenApiGroup)
-	openApi.GET("/publish", controller.GetBlogs)
-
 	apiV1 := r.Group(model.GroupPrefix)
 	apiV1.Use(JWTAuth())
 	apiV1.GET("/ping", func(context *gin.Context) {
@@ -64,17 +45,9 @@ func InitRouter() *gin.Engine {
 			"code":    200,
 		})
 	})
-	apiV1.Static("/draw", "./static/drawio")
-
-	apiV1.GET("/content", controller.GetNote)
-	apiV1.POST("/content", controller.WriteNote)
 	apiV1.POST("/image", controller.SaveImage)
-	apiV1.GET("/tree", controller.GetBookTree)
-	apiV1.POST("/rename", controller.RenameBookOrNote)
-	apiV1.POST("/create", controller.CreateNote)
-	apiV1.POST("/publish", controller.PublishNote)
-
-	apiV1.GET("/publish", controller.GetBlogs)
-
+	apiV1.GET("/image", controller.GetImageBase64Data)
+	apiV1.PUT("/image", controller.NewDefaultOssData)
+	apiV1.GET("/images", controller.GetOssDrawList)
 	return r
 }
