@@ -2,7 +2,7 @@ package model
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type JWT struct {
@@ -18,7 +18,7 @@ func NewJWT() *JWT {
 type CustomClaims struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 func (j *JWT) CreateToken(claims CustomClaims) (string, error) {
